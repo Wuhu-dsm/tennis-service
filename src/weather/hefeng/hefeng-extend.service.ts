@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { plainToClass } from 'class-transformer'
 import * as dayjs from 'dayjs'
-import { AliyunOssConfig } from 'life-helper-config'
+import { AliyunOssConfig } from 'src/app.config'
 import { HefengCachedService } from './hefeng-cached.service'
 import {
   ExtAirDailyForecastItem,
@@ -34,14 +34,14 @@ export class HefengExtendService {
   /** 存储资源的 OSS 绑定的域名 */
   private readonly baseURL = AliyunOssConfig.admin.url
 
-  constructor(private readonly hefengCachedService: HefengCachedService) {}
+  constructor (private readonly hefengCachedService: HefengCachedService) {}
 
   /**
    * 根据图标 ID 获取图标 URL
    *
    * @param icon 图标 ID
    */
-  private getIconUrl(icon: string): string {
+  private getIconUrl (icon: string): string {
     return this.baseURL + '/static/hefeng/c1/' + icon + '.svg'
   }
 
@@ -50,14 +50,14 @@ export class HefengExtendService {
    *
    * @param icon 图标 ID
    */
-  private getImageUrl(icon: string): string {
+  private getImageUrl (icon: string): string {
     return this.baseURL + '/static/hefeng/s2/' + icon + '.png'
   }
 
   /**
    * 获取天气生活指数对应的图标
    */
-  private getLivingIndexIconUrl(type: string): string {
+  private getLivingIndexIconUrl (type: string): string {
     return this.baseURL + '/static/hefeng/live/' + type + '.svg'
   }
 
@@ -66,7 +66,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的 `LocationID` 或以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getWeatherNow(location: string): Promise<ExtWeatherNow> {
+  async getWeatherNow (location: string): Promise<ExtWeatherNow> {
     const weatherNow: ExtWeatherNow = await this.hefengCachedService.getWeatherNow(location)
     weatherNow.obsDiff = dayjs().diff(dayjs(weatherNow.obsTime), 'minute')
 
@@ -78,7 +78,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的 `LocationID` 或以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getDailyForecast(location: string, days: 3 | 7 | 10 | 15): Promise<ExtDailyForecastItem[]> {
+  async getDailyForecast (location: string, days: 3 | 7 | 10 | 15): Promise<ExtDailyForecastItem[]> {
     const list = await this.hefengCachedService.getDailyForecast(location, days)
 
     return list.map((item: ExtDailyForecastItem) => {
@@ -124,7 +124,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的 `LocationID` 或以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getHourlyForecast(location: string, hours: 24 | 72 | 168): Promise<ExtHourlyForecastItem[]> {
+  async getHourlyForecast (location: string, hours: 24 | 72 | 168): Promise<ExtHourlyForecastItem[]> {
     const list = await this.hefengCachedService.getHourlyForecast(location, hours)
 
     return list.map((item: ExtHourlyForecastItem) => {
@@ -140,7 +140,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的 `LocationID` 或以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getLivingIndex(location: string): Promise<ExtLivingIndexItem[]> {
+  async getLivingIndex (location: string): Promise<ExtLivingIndexItem[]> {
     const list = await this.hefengCachedService.getLivingIndex(location)
 
     return list.map((item: ExtLivingIndexItem) => {
@@ -155,7 +155,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的 `LocationID` 或以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getAirNow(location: string): Promise<ExtAirNow> {
+  async getAirNow (location: string): Promise<ExtAirNow> {
     const airNow = await this.hefengCachedService.getAirNow(location)
 
     return plainToClass(ExtAirNow, airNow)
@@ -166,7 +166,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的 `LocationID` 或以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getAirDailyForecast(location: string): Promise<ExtAirDailyForecastItem[]> {
+  async getAirDailyForecast (location: string): Promise<ExtAirDailyForecastItem[]> {
     const list = await this.hefengCachedService.getAirDailyForecast(location)
 
     return list.map((item: ExtAirDailyForecastItem) => {
@@ -181,7 +181,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getMinutelyRain(location: string): Promise<ExtRainSurvey> {
+  async getMinutelyRain (location: string): Promise<ExtRainSurvey> {
     const rainSurvey = await this.hefengCachedService.getMinutelyRain(location)
 
     const list = rainSurvey.minutely.map((item: ExtMinutelyRainItem) => {
@@ -200,7 +200,7 @@ export class HefengExtendService {
   /**
    * 获取天气预警城市列表
    */
-  async getWarningCityList(): Promise<ExtWarningCity[]> {
+  async getWarningCityList (): Promise<ExtWarningCity[]> {
     const list = await this.hefengCachedService.getWarningCityList()
 
     return list.map((item: ExtWarningCity) => {
@@ -213,7 +213,7 @@ export class HefengExtendService {
    *
    * @param location 需要查询地区的 `LocationID` 或以英文逗号分隔的 `经度,纬度` 坐标（十进制）
    */
-  async getWarningNow(location: string): Promise<ExtWarningNowItem[]> {
+  async getWarningNow (location: string): Promise<ExtWarningNowItem[]> {
     const list = await this.hefengCachedService.getWarningNow(location)
 
     return list.map((item: ExtWarningNowItem) => {
@@ -243,7 +243,7 @@ export class HefengExtendService {
    *
    * 1-晴、2-云、3-阴、4-雨、5-雪、6-雾、7-尘
    */
-  skyClass(icon: string): SkyClass {
+  skyClass (icon: string): SkyClass {
     const iconId = parseInt(icon, 10)
 
     /** 最终输出的内容 */

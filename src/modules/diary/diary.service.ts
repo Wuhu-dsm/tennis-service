@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { AliyunOssConfig } from 'life-helper-config'
+import { AliyunOssConfig } from 'src/app.config'
 import { OssService } from 'src/shared/oss/oss.service'
 import { PlaceService } from 'src/shared/place/place.service'
 import { Repository } from 'typeorm'
@@ -10,7 +10,7 @@ import { Media, YearMonthDay } from './diary.model'
 
 @Injectable()
 export class DiaryService {
-  constructor(
+  constructor (
     private readonly placeService: PlaceService,
     private readonly ossService: OssService,
     @InjectRepository(Diary) private readonly diaryRepository: Repository<Diary>
@@ -22,7 +22,7 @@ export class DiaryService {
    * @param userId 用户 ID
    * @param data 客户端提交数据
    */
-  async add(userId: number, data: AddDiaryRequestDto): Promise<Diary> {
+  async add (userId: number, data: AddDiaryRequestDto): Promise<Diary> {
     const diary = this.diaryRepository.create()
 
     diary.userId = userId
@@ -43,7 +43,7 @@ export class DiaryService {
    *
    * @param userId 用户 ID
    */
-  async getAll(userId: number): Promise<Diary[]> {
+  async getAll (userId: number): Promise<Diary[]> {
     const list = await this.diaryRepository.find({
       select: ['id', 'content', 'images', 'videos', 'createTime'],
       where: { userId },
@@ -59,8 +59,8 @@ export class DiaryService {
    * @param videos 视频列表
    * @param images 图片列表
    */
-  mergeVideoAndImage(videos: string[], images: string[]): Media[] {
-    const baseURL = AliyunOssConfig.res.url
+  mergeVideoAndImage (videos: string[], images: string[]): Media[] {
+    const baseURL = ''
 
     const videoList = videos.map((path: string) => {
       const url = baseURL + '/' + path
@@ -88,7 +88,7 @@ export class DiaryService {
    *
    * @param t 时间
    */
-  splitDate(t: Date): YearMonthDay {
+  splitDate (t: Date): YearMonthDay {
     const year = t.getFullYear()
     const month = t.getMonth() + 1
     const day = t.getDate()
@@ -100,7 +100,7 @@ export class DiaryService {
    *
    * @param diary
    */
-  transformDiary(diary: Diary) {
+  transformDiary (diary: Diary) {
     const date = this.splitDate(diary.createTime)
     const medias = this.mergeVideoAndImage(diary.videos, diary.images)
 
@@ -119,7 +119,7 @@ export class DiaryService {
    * @param diaryId
    * @returns
    */
-  async getOne(userId: number, diaryId: number): Promise<Diary> {
+  async getOne (userId: number, diaryId: number): Promise<Diary> {
     const diary = await this.diaryRepository.findOne(diaryId)
     if (diary && diary.userId === userId) {
       return diary

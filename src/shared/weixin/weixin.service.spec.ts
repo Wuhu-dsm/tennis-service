@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Redis } from 'ioredis'
-import { RedisConfig } from 'life-helper-config'
+import { RedisConfig } from 'src/app.config'
 import { RedisModule, RedisService } from 'nestjs-redis'
 import { SharedModule } from '../shared.module'
 import { WeixinService } from './weixin.service'

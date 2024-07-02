@@ -11,7 +11,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import axios from 'axios'
 import { plainToClass } from 'class-transformer'
 import { Redis } from 'ioredis'
-import { LbsqqKeys } from 'life-helper-config'
+import { LbsqqKeys } from 'src/app.config'
 import { RedisService } from 'nestjs-redis'
 import { COMMON_SERVER_ERROR } from 'src/common/errors.constant'
 import { OssService } from '../oss/oss.service'
@@ -26,7 +26,7 @@ export class LbsqqService {
   /** 开发者密钥获取次数，每一次获取密钥则 +1 */
   private counter = 0
 
-  constructor(private redisService: RedisService, private readonly ossService: OssService) {
+  constructor (private redisService: RedisService, private readonly ossService: OssService) {
     this.redis = this.redisService.getClient()
   }
 
@@ -37,7 +37,7 @@ export class LbsqqService {
    * 每个开发者密钥都有请求并发限制，预定义了一个密钥数组，按照数组索引逐个获取使用。
    * @see [接口配额说明](https://lbs.qq.com/service/webService/webServiceGuide/webServiceQuota)
    */
-  getKey(): string {
+  getKey (): string {
     const keys: string[] = LbsqqKeys
     const n: number = this.counter++ % keys.length
     return keys[n]
@@ -50,7 +50,7 @@ export class LbsqqService {
    *
    * @see [文档地址](https://lbs.qq.com/service/webService/webServiceGuide/webServiceIp)
    */
-  async locateIp(ip: string): Promise<LocateIpResponse> {
+  async locateIp (ip: string): Promise<LocateIpResponse> {
     if (!ip) {
       // IP 地址为空也会请求成功（默认为请求者 IP 地址，即当前服务器 IP），这里额外再加一层检验
       this.logger.error('使用 `LbsqqService.ipLocation` 方法时传入 `ip` 为空！')
@@ -90,7 +90,7 @@ export class LbsqqService {
    *
    * @see [文档地址](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGcoder)
    */
-  async geoLocationCoder(longitude: number, latitude: number): Promise<GeoLocationCoderResponse> {
+  async geoLocationCoder (longitude: number, latitude: number): Promise<GeoLocationCoderResponse> {
     const redisKey = `lbsqq:address:location:${longitude},${latitude}`
     const result = await this.redis.get(redisKey)
 
@@ -124,7 +124,7 @@ export class LbsqqService {
    * @param longitude 经度
    * @param latitude 纬度
    */
-  async generateStaticMap(longitude: number, latitude: number): Promise<string> {
+  async generateStaticMap (longitude: number, latitude: number): Promise<string> {
     /** 地图视图中心点 */
     const center = `${latitude},${longitude}`
 
@@ -163,7 +163,7 @@ export class LbsqqService {
    *
    * @param ip IP 地址
    */
-  async getCoordinateByIp(ip: string): Promise<LocationCoordinate> {
+  async getCoordinateByIp (ip: string): Promise<LocationCoordinate> {
     const result = await this.locateIp(ip)
     const coord = result.result.location
     return { longitude: coord.lng, latitude: coord.lat }
@@ -175,7 +175,7 @@ export class LbsqqService {
    * @param longitude 经度
    * @param latitude 纬度
    */
-  async getRecommendAddressDescrption(longitude: number, latitude: number): Promise<string> {
+  async getRecommendAddressDescrption (longitude: number, latitude: number): Promise<string> {
     const result = await this.geoLocationCoder(longitude, latitude)
     return result.result.formatted_addresses.recommend
   }
@@ -186,7 +186,7 @@ export class LbsqqService {
    * @param longitude 经度
    * @param latitude 纬度
    */
-  async getAddressInfo(longitude: number, latitude: number): Promise<AddressInfo> {
+  async getAddressInfo (longitude: number, latitude: number): Promise<AddressInfo> {
     const result = await this.geoLocationCoder(longitude, latitude)
     return plainToClass(AddressInfo, result.result.ad_info)
   }
@@ -198,7 +198,7 @@ export class LbsqqService {
    * @param latitude 纬度
    * @return 静态地图的完整 URL，例如：`https://res.lifehelper.com.cn/staticmap/xxxxxx`
    */
-  async getStaticMapUrl(longitude: number, latitude: number): Promise<string> {
+  async getStaticMapUrl (longitude: number, latitude: number): Promise<string> {
     const key = await this.generateStaticMap(longitude, latitude)
     const url = this.ossService.getUrl(key)
     return url

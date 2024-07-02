@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
-import { HefengConfig } from 'life-helper-config'
 import { COMMON_SERVER_ERROR } from 'src/common/errors.constant'
 import { request } from 'src/common/http'
 import { INVALID_LOCATION } from './hefeng-error.constant'
@@ -16,7 +15,7 @@ import {
   WarningNowItem,
   WeatherNow,
 } from './hefeng-http.model'
-
+import { HefengConfig } from 'src/app.config'
 /**
  * 和风天气 - HTTP 请求服务
  *
@@ -82,8 +81,8 @@ export class HefengHttpService {
    * 4. 行政区划编码 `Adcode`。
    * ```
    */
-  async searchCity(location: string): Promise<CityInfo[]> {
-    const { key } = HefengConfig.basic
+  async searchCity (location: string): Promise<CityInfo[]> {
+    const { key } = { key: '' }
 
     const response = await request<HefengResponse>({
       url: 'https://geoapi.qweather.com/v2/city/lookup',
@@ -123,7 +122,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/geo/top-city/)
    */
-  async getTopCity(): Promise<CityInfo[]> {
+  async getTopCity (): Promise<CityInfo[]> {
     const { key } = HefengConfig.basic
 
     const response = await request<HefengResponse>({
@@ -165,7 +164,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/weather/weather-now/)
    */
-  async getWeatherNow(location: string): Promise<WeatherNow> {
+  async getWeatherNow (location: string): Promise<WeatherNow> {
     const { key, baseURL } = HefengConfig.basic
 
     const response = await request<HefengResponse>({
@@ -201,7 +200,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/weather/weather-daily-forecast/)
    */
-  async getDailyForecast(location: string, days: 3 | 7 | 10 | 15): Promise<DailyForecastItem[]> {
+  async getDailyForecast (location: string, days: 3 | 7 | 10 | 15): Promise<DailyForecastItem[]> {
     /**
      * 说明：
      * 1. 3 天和 7 天使用开发版。
@@ -242,7 +241,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/weather/weather-hourly-forecast/)
    */
-  async getHourlyForecast(location: string, hours: 24 | 72 | 168): Promise<HourlyForecastItem[]> {
+  async getHourlyForecast (location: string, hours: 24 | 72 | 168): Promise<HourlyForecastItem[]> {
     const { key, baseURL } = hours === 24 ? HefengConfig.basic : HefengConfig.pro
 
     const response = await request<HefengResponse>({
@@ -277,7 +276,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/indices/)
    */
-  async getLivingIndex(location: string): Promise<LivingIndexItem[]> {
+  async getLivingIndex (location: string): Promise<LivingIndexItem[]> {
     const { key, baseURL } = HefengConfig.basic
 
     const response = await request<HefengResponse>({
@@ -313,7 +312,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/air/air-now/)
    */
-  async getAirNow(location: string): Promise<AirNow> {
+  async getAirNow (location: string): Promise<AirNow> {
     const { key, baseURL } = HefengConfig.basic
 
     const response = await request<HefengResponse>({
@@ -348,7 +347,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/air/air-daily-forecast/)
    */
-  async getAirDailyForecast(location: string): Promise<AirDailyForecastItem[]> {
+  async getAirDailyForecast (location: string): Promise<AirDailyForecastItem[]> {
     const { key, baseURL } = HefengConfig.pro
 
     const response = await request<HefengResponse>({
@@ -392,7 +391,7 @@ export class HefengHttpService {
    * 1. 当前接口的 `location` 参数不支持使用 `LocationID`。
    * ```
    */
-  async getMinutelyRain(location: string): Promise<RainSurvey> {
+  async getMinutelyRain (location: string): Promise<RainSurvey> {
     const { key, baseURL } = HefengConfig.pro
 
     const response = await request<HefengResponse>({
@@ -425,7 +424,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/warning/weather-warning-city-list/)
    */
-  async getWarningCityList(): Promise<WarningCity[]> {
+  async getWarningCityList (): Promise<WarningCity[]> {
     const { key } = HefengConfig.basic
 
     const response = await request<HefengResponse>({
@@ -459,7 +458,7 @@ export class HefengHttpService {
    * @see
    * [API 开发文档](https://dev.qweather.com/docs/api/warning/weather-warning/)
    */
-  async getWarningNow(location: string): Promise<WarningNowItem[]> {
+  async getWarningNow (location: string): Promise<WarningNowItem[]> {
     const { key, baseURL } = HefengConfig.basic
 
     const response = await request<HefengResponse>({

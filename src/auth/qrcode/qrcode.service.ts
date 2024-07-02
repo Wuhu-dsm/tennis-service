@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import { Redis } from 'ioredis'
-import { AliyunOssConfig } from 'life-helper-config'
+import { AliyunOssConfig } from 'src/app.config'
 import { RedisService } from 'nestjs-redis'
 import { OssService } from 'src/shared/oss/oss.service'
 import { WeixinService } from 'src/shared/weixin/weixin.service'
@@ -19,7 +19,7 @@ export class QrcodeService {
   /** 用于存储二维码图片的目录名称 */
   private readonly dirname = 'wxacode'
 
-  constructor(private readonly redisService: RedisService, private readonly weixinService: WeixinService, private readonly ossService: OssService) {
+  constructor (private readonly redisService: RedisService, private readonly weixinService: WeixinService, private readonly ossService: OssService) {
     this.redis = this.redisService.getClient()
   }
 
@@ -28,14 +28,14 @@ export class QrcodeService {
    *
    * @param code 检验码
    */
-  private getRedisKey(code: string): string {
+  private getRedisKey (code: string): string {
     return `auth:authentication:code:${code}`
   }
 
   /**
    * 获取用于存储校验码列表的 Redis 键名
    */
-  private getListRedisKey(): string {
+  private getListRedisKey (): string {
     return 'auth:authentication:list'
   }
 
@@ -44,14 +44,14 @@ export class QrcodeService {
    *
    * @param code 检验码
    */
-  private getQrcodeUrl(code: string): string {
+  private getQrcodeUrl (code: string): string {
     return this.ossURL + '/' + this.dirname + '/' + code
   }
 
   /**
    * 生成一份身份认证凭证信息，存于 Redis，后续操作均围绕着这个认证信息
    */
-  private async createAuthentication(): Promise<string> {
+  private async createAuthentication (): Promise<string> {
     /**
      * 校验码
      *
@@ -87,7 +87,7 @@ export class QrcodeService {
    * 1. 目前实际上使用小程序码，非标准的二维码。
    * ```
    */
-  private async generateQrcode(): Promise<string> {
+  private async generateQrcode (): Promise<string> {
     /** 小程序中定义的页面 */
     const page = 'pages/auth/login-confirm/login-confirm'
 
@@ -112,7 +112,7 @@ export class QrcodeService {
    * 1. 这个方法处理除了使用资源进行存储外，无任何副作用，可任意无限次调用。
    * ```
    */
-  private async addQrcode(): Promise<void> {
+  private async addQrcode (): Promise<void> {
     const counter = Math.ceil(Math.random() * 3)
 
     for (let i = 0; i < counter; i++) {
@@ -125,7 +125,7 @@ export class QrcodeService {
   /**
    * 获取二维码信息
    */
-  async getQrcode(): Promise<QrcodeProfile> {
+  async getQrcode (): Promise<QrcodeProfile> {
     // 异步执行，不要加 `await`
     this.addQrcode()
 
@@ -149,7 +149,7 @@ export class QrcodeService {
    * @param userId 用户 ID
    * @param code 校验码
    */
-  async scan(userId: number, code: string): Promise<Authentication> {
+  async scan (userId: number, code: string): Promise<Authentication> {
     const rKey = this.getRedisKey(code)
 
     const result = await this.redis.get(rKey)
@@ -175,7 +175,7 @@ export class QrcodeService {
    * @param userId 用户 ID
    * @param code 校验码
    */
-  async confirm(userId: number, code: string): Promise<Authentication> {
+  async confirm (userId: number, code: string): Promise<Authentication> {
     const rKey = this.getRedisKey(code)
 
     const result = await this.redis.get(rKey)
@@ -207,7 +207,7 @@ export class QrcodeService {
    * 1. 在扫码登录控制器方法内使用，验证完成后，发放登录凭证，并标记该校验码已使用。
    * ```
    */
-  async consume(code: string): Promise<Authentication> {
+  async consume (code: string): Promise<Authentication> {
     const rKey = this.getRedisKey(code)
 
     const result = await this.redis.get(rKey)
@@ -231,7 +231,7 @@ export class QrcodeService {
    *
    * @param code 校验码
    */
-  async query(code: string): Promise<Authentication> {
+  async query (code: string): Promise<Authentication> {
     const rKey = this.getRedisKey(code)
 
     const result = await this.redis.get(rKey)

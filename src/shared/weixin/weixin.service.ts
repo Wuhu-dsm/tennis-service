@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import axios, { AxiosRequestConfig } from 'axios'
 import { Redis } from 'ioredis'
-import { WeixinMiniProgramConfig } from 'life-helper-config'
+import { WeixinMiniProgramConfig } from 'src/app.config'
 import { RedisService } from 'nestjs-redis'
 import { COMMON_SERVER_ERROR, WX_INVALID_CODE } from 'src/common/errors.constant'
 import { BasicWeixinResponse, Code2SessionResponse, GetAccessTokenResponse, GetUnlimitedConfig } from './weixin.interface'
@@ -14,7 +14,7 @@ export class WeixinService {
   private readonly logger = new Logger(WeixinService.name)
   private readonly redis: Redis
 
-  constructor(private redisService: RedisService) {
+  constructor (private redisService: RedisService) {
     this.redis = this.redisService.getClient()
   }
 
@@ -29,7 +29,7 @@ export class WeixinService {
    * 该接口需要缓存的原因：微信小程序端对获取 `code` 存在限制，缓存了获取的 `code`，此处不加缓存，
    * 去微信服务端换取 session 信息会报 `code` 已使用的错误。
    */
-  async code2Session(code: string): Promise<Code2SessionResponse> {
+  async code2Session (code: string): Promise<Code2SessionResponse> {
     const redisKey = `weixin:session:code:${code}`
     const result = await this.redis.get(redisKey)
     if (result) {
@@ -59,7 +59,7 @@ export class WeixinService {
    *
    * @see [官方文档](https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/access-token/auth.getAccessToken.html)
    */
-  async getAccessToken(forceUpdate = false): Promise<string> {
+  async getAccessToken (forceUpdate = false): Promise<string> {
     const redisKey = 'weixin:token'
 
     if (!forceUpdate) {
@@ -90,7 +90,7 @@ export class WeixinService {
    * @description
    * 注意：非文本请求不要使用当前方法
    */
-  async request<T extends BasicWeixinResponse>(options: AxiosRequestConfig) {
+  async request<T extends BasicWeixinResponse> (options: AxiosRequestConfig) {
     const token = await this.getAccessToken()
     const params = options.params || {}
     params.access_token = token
@@ -123,7 +123,7 @@ export class WeixinService {
    *
    * @see [官方文档](https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/qr-code/wxacode.getUnlimited.html)
    */
-  async getUnlimitedWxacode(config: GetUnlimitedConfig): Promise<Buffer> {
+  async getUnlimitedWxacode (config: GetUnlimitedConfig): Promise<Buffer> {
     const token = await this.getAccessToken()
 
     const options: AxiosRequestConfig = {

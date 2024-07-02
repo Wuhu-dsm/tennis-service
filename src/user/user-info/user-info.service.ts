@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { AliyunOssConfig } from 'life-helper-config'
+import { AliyunOssConfig } from 'src/app.config'
 import { Repository } from 'typeorm'
 import { UserInfo } from './user-info.entity'
 import { OssService } from 'src/shared/oss/oss.service'
@@ -24,7 +24,7 @@ export class UserInfoService {
   /** 存储头像的 OSS 绑定的 URL */
   private readonly ossURL = AliyunOssConfig.res.url
 
-  constructor(
+  constructor (
     @InjectRepository(UserInfo)
     private readonly userInfoRepository: Repository<UserInfo>,
 
@@ -43,7 +43,7 @@ export class UserInfoService {
    * 1. 数据库中存储的是 `avatar/xxxxxx` 格式的值。
    * ```
    */
-  private getAvatarUrl(avatarUrl: string): string {
+  private getAvatarUrl (avatarUrl: string): string {
     // 为未来可能的情况做一层兼容，如果本身是完整的 URL，则直接返回
     if (avatarUrl.startsWith('http') || !avatarUrl) {
       return avatarUrl
@@ -65,7 +65,7 @@ export class UserInfoService {
    * 2. 使用这个方法统一处理行记录不存在的情况，返回对应的实体。
    * ```
    */
-  private async getUserInfoEntity(userId: number): Promise<UserInfo> {
+  private async getUserInfoEntity (userId: number): Promise<UserInfo> {
     const result = await this.userInfoRepository.findOne(userId)
 
     if (result) {
@@ -97,7 +97,7 @@ export class UserInfoService {
    * 3. 转储后，存于 OSS 的路径格式为： `avatar/xxxxxx`。
    * ```
    */
-  private async dumpAvatar(avatarUrl: string): Promise<string> {
+  private async dumpAvatar (avatarUrl: string): Promise<string> {
     if (avatarUrl.startsWith('avatar/')) {
       return avatarUrl
     }
@@ -113,7 +113,7 @@ export class UserInfoService {
    *
    * @param userId 用户 ID
    */
-  async getUserInfo(userId: number): Promise<UserInfo> {
+  async getUserInfo (userId: number): Promise<UserInfo> {
     const userInfo = await this.getUserInfoEntity(userId)
 
     if (userInfo.avatarUrl) {
@@ -129,7 +129,7 @@ export class UserInfoService {
    * @param userId 用户 ID
    * @param data 客户端提交的数据
    */
-  async updateUserInfo(userId: number, data: UpdateUserInfoRequestDto): Promise<UserInfo> {
+  async updateUserInfo (userId: number, data: UpdateUserInfoRequestDto): Promise<UserInfo> {
     const userInfo = await this.getUserInfoEntity(userId)
 
     if (data.avatarUrl) {

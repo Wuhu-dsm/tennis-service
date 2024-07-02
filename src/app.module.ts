@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { APP_FILTER } from '@nestjs/core'
 import { ScheduleModule } from '@nestjs/schedule'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { RedisConfig, TypeOrmConfig } from 'life-helper-config'
+import { RedisConfig, TypeOrmConfig } from 'src/app.config'
 import { RedisModule } from 'nestjs-redis'
 import { AuthModule } from './auth/auth.module'
 import { AllExceptionFilter } from './common/all-exception.filter'
@@ -35,7 +35,7 @@ import { WeatherModule } from './weather/weather.module'
   providers: [{ provide: APP_FILTER, useClass: AllExceptionFilter }],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
+  configure (consumer: MiddlewareConsumer): MiddlewareConsumer | void {
     /** 中间件列表 */
     const middlewares = [AuthMiddleware]
 

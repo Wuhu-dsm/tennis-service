@@ -1,14 +1,13 @@
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { NestExpressApplication } from '@nestjs/platform-express'
-import { PORT, PROXY_NUMBER } from 'life-helper-config'
+import { PORT, PROXY_NUMBER } from 'src/app.config'
 
 import { AppModule } from './app.module'
 import { setupSwagger } from './common/swagger.plugin'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true })
-
   // 添加全局自动验证管道
   app.useGlobalPipes(
     new ValidationPipe({

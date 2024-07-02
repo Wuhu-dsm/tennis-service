@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, Logger, HttpException } from '@nestjs/common'
 import * as OSS from 'ali-oss'
 import * as crypto from 'crypto'
 import { Redis } from 'ioredis'
-import { AliyunOssConfig, AliyunOssEndpoint } from 'life-helper-config'
+import { AliyunOssConfig, AliyunOssEndpoint } from 'src/app.config'
 import { RedisService } from 'nestjs-redis'
 import { v4 as uuidv4 } from 'uuid'
 import { ClientToken, DumpDirname, GenerateClientTokenConfig, SaveDirname } from './oss.interface'
@@ -15,13 +15,13 @@ export class OssService {
   private readonly ossClient: OSS
   private readonly redis: Redis
 
-  constructor(private redisService: RedisService) {
-    this.ossClient = new OSS({
-      bucket: AliyunOssConfig.res.bucket,
-      accessKeyId: AliyunOssConfig.res.accessKeyId,
-      accessKeySecret: AliyunOssConfig.res.accessKeySecret,
-      endpoint: AliyunOssEndpoint,
-    })
+  constructor (private redisService: RedisService) {
+    // this.ossClient = new OSS({
+    //   bucket: AliyunOssConfig.res.bucket,
+    //   accessKeyId: AliyunOssConfig.res.accessKeyId,
+    //   accessKeySecret: AliyunOssConfig.res.accessKeySecret,
+    //   endpoint: AliyunOssEndpoint,
+    // })
 
     this.redis = this.redisService.getClient()
   }
@@ -33,7 +33,7 @@ export class OssService {
    * https://res.lifehelper.com.cn
    * ```
    */
-  get origin(): string {
+  get origin (): string {
     return AliyunOssConfig.res.url
   }
 
@@ -42,7 +42,7 @@ export class OssService {
    *
    * @param path 路径
    */
-  getUrl(path: string): string {
+  getUrl (path: string): string {
     return this.origin.replace(/\/+$/, '') + '/' + path.replace(/^\/+/, '')
   }
 
@@ -53,7 +53,7 @@ export class OssService {
    *
    * @see [配置内容](https://help.aliyun.com/document_detail/31988.html#title-6w1-wj7-q4e)
    */
-  generateClientToken(config: GenerateClientTokenConfig): ClientToken {
+  generateClientToken (config: GenerateClientTokenConfig): ClientToken {
     /** 用于存储由客户端直传的文件的 OSS 存储桶 */
     const ossBucket = AliyunOssConfig.res
 
@@ -112,7 +112,7 @@ export class OssService {
    *
    * @see [管理文件元信息](https://help.aliyun.com/document_detail/31859.htm)
    */
-  async upload(name: string, buf: Buffer, options?: OSS.PutObjectOptions): Promise<string> {
+  async upload (name: string, buf: Buffer, options?: OSS.PutObjectOptions): Promise<string> {
     const result = await this.ossClient.put(name, buf, options)
     if (result.res.status === 200) {
       return result.name
@@ -129,7 +129,7 @@ export class OssService {
    * @param buf 待上传的内容
    * @param options 配置
    */
-  async save(dirname: SaveDirname, buf: Buffer, options?: OSS.PutObjectOptions): Promise<string> {
+  async save (dirname: SaveDirname, buf: Buffer, options?: OSS.PutObjectOptions): Promise<string> {
     /** 随机文件名（去掉短横线的 uuid） */
     const filename = uuidv4().replace(/-/gu, '')
 
@@ -148,7 +148,7 @@ export class OssService {
    * @param dirname 转储目录
    * @param options 配置
    */
-  async dump(url: string, dirname: DumpDirname, options: OSS.PutObjectOptions = {}): Promise<string> {
+  async dump (url: string, dirname: DumpDirname, options: OSS.PutObjectOptions = {}): Promise<string> {
     const response = await axios.request({
       method: 'GET',
       url: url,
@@ -182,7 +182,7 @@ export class OssService {
    *
    * @see [文档地址](https://help.aliyun.com/document_detail/64555.html)
    */
-  getVideoSnapshot(url: string) {
+  getVideoSnapshot (url: string) {
     return url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast'
   }
 
@@ -198,7 +198,7 @@ export class OssService {
    * 很早之前写的，改了几版，没验证过
    *
    */
-  async verifyOssCallbackSignature(options) {
+  async verifyOssCallbackSignature (options) {
     const { signature, ossPubKeyUrlBase64, path, search, rawBody } = options
     const redis = this.redisService.getClient()
 
