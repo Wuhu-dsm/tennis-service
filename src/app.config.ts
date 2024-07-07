@@ -16,6 +16,7 @@ export const TypeOrmConfig = {
   password: 'Zuoling123',
   database: 'tennis_test',
   autoLoadEntities: true,
+  synchronize:true
 }
 export const AliyunOssEndpoint = ''
 export const HefengConfig: any = {}

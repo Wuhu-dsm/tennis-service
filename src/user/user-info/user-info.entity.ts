@@ -66,4 +66,21 @@ export class UserInfo extends AbstractEntity {
     comment: '用户所在城市',
   })
   city = ''
+
+  /** 用户学校*/
+  @Column({
+    type: 'varchar',
+    length: 64,
+    default: '',
+    comment: '用户所在城市',
+  })
+  sclool = ''
+  /** 用户班级*/
+  @Column({
+    type: 'varchar',
+    length: 64,
+    default: '',
+    comment: '用户所在班级',
+  })
+  class = ''
 }

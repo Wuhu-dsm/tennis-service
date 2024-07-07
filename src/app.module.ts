@@ -15,7 +15,7 @@ import { SharedModule } from './shared/shared.module'
 import { SystemModule } from './system/system.module'
 import { UserModule } from './user/user.module'
 import { WeatherModule } from './weather/weather.module'
-
+import { schoolModule } from './school/school.module'
 @Module({
   imports: [
     TypeOrmModule.forRoot(TypeOrmConfig),
@@ -30,12 +30,13 @@ import { WeatherModule } from './weather/weather.module'
     UploadModule,
     SystemModule,
     WeatherModule,
+    schoolModule
   ],
 
   providers: [{ provide: APP_FILTER, useClass: AllExceptionFilter }],
 })
 export class AppModule implements NestModule {
-  configure (consumer: MiddlewareConsumer): MiddlewareConsumer | void {
+  configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
     /** 中间件列表 */
     const middlewares = [AuthMiddleware]
 
