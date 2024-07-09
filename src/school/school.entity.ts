@@ -23,7 +23,7 @@ export class SchoolEnitity extends AbstractEntity {
     type: 'varchar',
     comment: '学校名字',
   })
-  school_name: Date
+  school_name: string
 
 
 }

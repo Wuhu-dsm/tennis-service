@@ -45,6 +45,7 @@ export class UpdateUserInfoRequestDto {
   @IsOptional()
   @IsString()
   city?: string
+  
 }
 
 /** 更新用户个人信息 - 响应数据 */

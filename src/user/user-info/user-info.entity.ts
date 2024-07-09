@@ -1,6 +1,6 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm'
 import { AbstractEntity } from '../../common/abstract.entity'
-
+import { Class } from '../../school/class/class.entity'
 /**
  * 用户信息表
  *
@@ -74,13 +74,29 @@ export class UserInfo extends AbstractEntity {
     default: '',
     comment: '用户所在城市',
   })
-  sclool = ''
-  /** 用户班级*/
+  school = ''
+  /** 用户角色，0-学生，1-老师 */
   @Column({
-    type: 'varchar',
-    length: 64,
-    default: '',
-    comment: '用户所在班级',
+    type: 'tinyint',
+    default: 0,
+    comment: '用户角色，0-学生，1-老师',
   })
-  class = ''
+  role = 0
+  /** 用户所在班级（学生） */
+  @ManyToOne(() => Class, (classEntity) => classEntity.students)
+  class: Class
+  /** 用户管理的班级（老师） */
+  @ManyToMany(() => Class)
+  @JoinTable({
+    name: 'teacher_classes',
+    joinColumn: {
+      name: 'teacher_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'class_id',
+      referencedColumnName: 'id',
+    },
+  })
+  managedClasses: Class[]
 }
